@@ -1,21 +1,18 @@
 package fr.fullstack.shopapp.entity;
 
-import java.util.Date;
+import java.time.LocalTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-//import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
-import org.springframework.format.annotation.DateTimeFormat;
-//import javax.persistence.Table;
-
 @Entity
-//@Table(name = "openingHours")
+@Table(name = "openingHours")
 public class OpeningHoursShop {
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,16 +24,10 @@ public class OpeningHoursShop {
     private int day;
 	
 	@Column(nullable = false)
-	@DateTimeFormat(pattern="hh:mm")
-    private Date openAt;
+    private LocalTime openAt;
 	
 	@Column(nullable = false)
-	@DateTimeFormat(pattern="hh:mm")
-    private Date closeAt;
-	
-	// Mettre plutot onetomany dans shop
-//	@ManyToOne
-//	private Shop shop;
+    private LocalTime closeAt;
 	
 	public long getId() {
 		return id;
@@ -54,19 +45,19 @@ public class OpeningHoursShop {
 		this.day = day;
 	}
 	
-	public Date getOpenAt() {
+	public LocalTime getOpenAt() {
 		return openAt;
 	}
 	
-	public void setOpenAt(Date openAt) {
+	public void setOpenAt(LocalTime openAt) {
 		this.openAt = openAt;
 	}
 	
-	public Date getCloseAt() {
+	public LocalTime getCloseAt() {
 		return closeAt;
 	}
 	
-	public void setCloseAt(Date closeAt) {
+	public void setCloseAt(LocalTime closeAt) {
 		this.closeAt = closeAt;
 	}
 }
