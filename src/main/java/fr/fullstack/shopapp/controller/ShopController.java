@@ -20,6 +20,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import fr.fullstack.shopapp.entity.Shop;
 import fr.fullstack.shopapp.service.ShopService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @RestController
 @RequestMapping("/api/v1/shops")
@@ -28,18 +30,20 @@ public class ShopController {
 	@Autowired
     private ShopService service;
 	
+	@ApiOperation(value = "Get shop by id")
 	@GetMapping("/{id}")
     public ResponseEntity<Shop> getShopById(@PathVariable long id) {
         return ResponseEntity.ok().body(service.getShopById(id));
     }
 	
+	@ApiOperation(value = "Get shops (sorting and filtering are possible)")
 	@GetMapping
 	public ResponseEntity<Page<Shop>> getAllShops(
 		Pageable pageable,
-		@RequestParam Optional<String> sortBy,
-		@RequestParam Optional<Boolean> inVacations,
-		@RequestParam Optional<String> createdAfter,
-		@RequestParam Optional<String> createdBefore
+		@ApiParam(example = "name") @RequestParam(required = false) Optional<String> sortBy,
+		@ApiParam(example = "true") @RequestParam(required = false) Optional<Boolean> inVacations,
+		@ApiParam(example = "2022-11-15") @RequestParam(required = false) Optional<String> createdAfter,
+		@ApiParam(example = "2022-11-15") @RequestParam(required = false) Optional<String> createdBefore
 		
 	) {
 		return ResponseEntity.ok(
@@ -47,6 +51,7 @@ public class ShopController {
 		);
 	}
 	
+	@ApiOperation(value = "Create a shop")
 	@PostMapping
 	public ResponseEntity<Shop> createShop(@RequestBody Shop shop) {
 		try {
@@ -58,6 +63,7 @@ public class ShopController {
 		}
 	}
 	
+	@ApiOperation(value = "Update a shop")
 	@PutMapping
 	public ResponseEntity<Shop> updateShop(@RequestBody Shop shop) {
 		try {
@@ -69,6 +75,7 @@ public class ShopController {
 		}
 	}
 	
+	@ApiOperation(value = "Delete a shop by its id")
 	@DeleteMapping("/{id}")
     public HttpStatus deleteShop(@PathVariable long id) {
 		try {
