@@ -13,6 +13,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Formula;
 
 @Entity
 @Table(name = "shops")
@@ -33,6 +34,9 @@ public class Shop {
 	
 	@OneToMany(cascade = {CascadeType.ALL})
 	private List<OpeningHoursShop> openingHours = new ArrayList<OpeningHoursShop>();
+
+	@Formula(value = "(SELECT COUNT(*) FROM products p WHERE p.shop_id = id)")
+	private Long nbProducts;
 	
 	public long getId() {
 		return id;
@@ -68,5 +72,13 @@ public class Shop {
 	
 	public void setOpeningHours(List<OpeningHoursShop> openingHours) {
 		this.openingHours = openingHours;
+	}
+
+	public long getNbProducts() {
+		return nbProducts;
+	}
+	
+	public void setNbProducts(long nbProducts) {
+		this.nbProducts = nbProducts;
 	}
 }

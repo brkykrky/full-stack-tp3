@@ -6,5 +6,7 @@ mvn spring-boot:run
 ```
 
 ## Roadmap
-- [x] Filter on Shop
-- [ ] CRUD product
+- [x] Filter on shop
+- [x] CRUD product
+- [ ] Internationalization product
+- [ ] CRUD category
