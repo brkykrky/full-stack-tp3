@@ -36,8 +36,11 @@ public class ShopService {
                 case "name" :
                     shopList = shopRepository.findByOrderByNameAsc(pageable);
                     break;
-                default :
+                case "createdAt" :
                     shopList = shopRepository.findByOrderByCreatedAtAsc(pageable);
+                    break;
+                default :
+                    shopList = shopRepository.findByOrderByNbProductsAsc(pageable);
                     break;
                 }
             return new PageImpl<Shop>(shopList);
@@ -63,11 +66,7 @@ public class ShopService {
 	
 	public Shop updateShop(Shop shop) throws Exception {
         Optional<Shop> shopFound = shopRepository.findById(shop.getId());
-
         if (shopFound.isPresent()) {
-            Shop shopUpdate = shopFound.get();
-            shopUpdate.setInVacations(shop.getInVacations());
-            shopUpdate.setName(shop.getName());
             return this.createShop(shop);
         } else {
             throw new Exception("Id not found");

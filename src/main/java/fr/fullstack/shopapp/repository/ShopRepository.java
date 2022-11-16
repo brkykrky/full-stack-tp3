@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import fr.fullstack.shopapp.entity.Shop;
 
@@ -30,6 +31,9 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
 
     List<Shop> findByOrderByCreatedAtAsc(Pageable pageable);
 
-    // @Query()
-    // List<Shop> findByOrderByNbProductsAsc(Pageable pageable);
+    @Query(
+        value="SELECT *, (SELECT COUNT(*) FROM products p WHERE p.shop_id = s.id) as nbProducts FROM shops s ORDER BY (SELECT COUNT(*) FROM products p WHERE p.shop_id = s.id) DESC",
+        nativeQuery = true
+    )
+    List<Shop> findByOrderByNbProductsAsc(Pageable pageable);
 }
