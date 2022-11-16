@@ -21,7 +21,12 @@ public class ProductService {
         return productRepository.findById(id).orElse(null);
     }
 
-	public Page<Product> getShopProductList(long shopId, Pageable pageable) {       
+	public Page<Product> getShopProductList(long shopId, Optional<Long> categoryId, Pageable pageable) {       
+        if (categoryId.isPresent()) {
+            List<Product> list = productRepository.findByShopAndCategory(shopId, categoryId.get(), pageable);
+            return new PageImpl<Product>(list);
+        }
+        
         List<Product> list = productRepository.findByShop(shopId, pageable);
         return new PageImpl<Product>(list);
     }
