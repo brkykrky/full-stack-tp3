@@ -40,7 +40,7 @@ public class ProductController {
 	@GetMapping
 	public ResponseEntity<Page<Product>> getProductsOfShop(
 		Pageable pageable,
-		@ApiParam(example = "1") @RequestParam(required = true) Long shopId,
+		@ApiParam(example = "1") @RequestParam(required = false) Optional<Long> shopId,
 		@ApiParam(example = "1") @RequestParam(required = false) Optional<Long> categoryId
 	) {
 		return ResponseEntity.ok(
