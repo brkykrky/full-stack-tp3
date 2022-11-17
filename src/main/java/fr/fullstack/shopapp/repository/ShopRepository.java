@@ -32,7 +32,11 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
     List<Shop> findByOrderByCreatedAtAsc(Pageable pageable);
 
     @Query(
-        value="SELECT *, (SELECT COUNT(*) FROM products p WHERE p.shop_id = s.id) as nbProducts FROM shops s ORDER BY (SELECT COUNT(*) FROM products p WHERE p.shop_id = s.id) DESC",
+        value="SELECT *,"
+            + "(SELECT COUNT(*) FROM products p WHERE p.shop_id = s.id) as nbProducts, "
+            + "(SELECT COUNT(DISTINCT pc.category_id) FROM products_categories pc WHERE pc.product_id IN (SELECT p.id FROM products p WHERE p.shop_id = s.id)) as nbCategories "
+            + "FROM shops s "
+            + "ORDER BY (SELECT COUNT(*) FROM products p WHERE p.shop_id = s.id) DESC",
         nativeQuery = true
     )
     List<Shop> findByOrderByNbProductsAsc(Pageable pageable);

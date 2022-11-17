@@ -16,6 +16,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Formula;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 @Table(name = "shops")
 public class Shop {
@@ -25,6 +27,7 @@ public class Shop {
 
 	@CreationTimestamp
 	@Column(name = "created_at", nullable = false, updatable = false)
+	@JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate createdAt;
 	
 	@Column(nullable = false, unique = true)
@@ -38,6 +41,10 @@ public class Shop {
 
 	@Formula(value = "(SELECT COUNT(*) FROM products p WHERE p.shop_id = id)")
 	private Long nbProducts;
+
+	@Formula(value = "(SELECT COUNT(DISTINCT pc.category_id) FROM products_categories pc "
+					+ "WHERE pc.product_id IN (SELECT p.id FROM products p WHERE p.shop_id = id))")
+	private Long nbCategories;
 	
 	public long getId() {
 		return id;
@@ -81,5 +88,13 @@ public class Shop {
 	
 	public void setNbProducts(long nbProducts) {
 		this.nbProducts = nbProducts;
+	}
+
+	public long getNbCategories() {
+		return nbCategories;
+	}
+	
+	public void setNbCategories(long nbCategories) {
+		this.nbCategories = nbCategories;
 	}
 }
