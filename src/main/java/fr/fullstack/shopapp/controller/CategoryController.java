@@ -26,23 +26,23 @@ public class CategoryController {
 	@Autowired
     private CategoryService service;
 
-	@ApiOperation(value = "Get shop by id")
+	@ApiOperation(value = "Get category by id")
 	@GetMapping("/{id}")
     public ResponseEntity<Category> getCategoryById(@PathVariable long id) {
         return ResponseEntity.ok().body(service.getCategoryById(id));
     }
 	
-	@ApiOperation(value = "Get shops (sorting and filtering are possible)")
+	@ApiOperation(value = "Get categories (sorting and filtering are possible)")
 	@GetMapping
 	public ResponseEntity<Page<Category>> getAllCategorys(Pageable pageable) {
 		return ResponseEntity.ok(service.getCategoryList(pageable));
 	}
 	
-	@ApiOperation(value = "Create a shop")
+	@ApiOperation(value = "Create a category")
 	@PostMapping
-	public ResponseEntity<Category> createCategory(@RequestBody Category shop) {
+	public ResponseEntity<Category> createCategory(@RequestBody Category category) {
 		try {
-			return ResponseEntity.ok(service.createCategory(shop));
+			return ResponseEntity.ok(service.createCategory(category));
 		} catch (Exception e) {
 			throw new ResponseStatusException(
 				HttpStatus.BAD_REQUEST, "An error occured during the creation", e
@@ -50,11 +50,11 @@ public class CategoryController {
 		}
 	}
 	
-	@ApiOperation(value = "Update a shop")
+	@ApiOperation(value = "Update a category")
 	@PutMapping
-	public ResponseEntity<Category> updateCategory(@RequestBody Category shop) {
+	public ResponseEntity<Category> updateCategory(@RequestBody Category category) {
 		try {
-			return ResponseEntity.ok().body(service.updateCategory(shop));
+			return ResponseEntity.ok().body(service.updateCategory(category));
 		} catch (Exception e) {
 			throw new ResponseStatusException(
 				HttpStatus.BAD_REQUEST, "An error occured during the modification", e
@@ -62,7 +62,7 @@ public class CategoryController {
 		}
 	}
 	
-	@ApiOperation(value = "Delete a shop by its id")
+	@ApiOperation(value = "Delete a category by its id")
 	@DeleteMapping("/{id}")
     public HttpStatus deleteCategory(@PathVariable long id) {
 		try {

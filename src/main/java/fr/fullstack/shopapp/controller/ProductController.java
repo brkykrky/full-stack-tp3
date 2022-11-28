@@ -36,7 +36,7 @@ public class ProductController {
         return ResponseEntity.ok().body(service.getProductById(id));
     }
 
-	@ApiOperation(value = "Get products of a specific shop")
+	@ApiOperation(value = "Get products (filtering by shop and category is possible)")
 	@GetMapping
 	public ResponseEntity<Page<Product>> getProductsOfShop(
 		Pageable pageable,
