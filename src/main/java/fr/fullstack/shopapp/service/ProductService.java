@@ -1,11 +1,9 @@
 package fr.fullstack.shopapp.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +19,16 @@ public class ProductService {
         return productRepository.findById(id).orElse(null);
     }
 
-	public Page<Product> getShopProductList(long shopId, Pageable pageable) {       
-        List<Product> list = productRepository.findByShop(shopId, pageable);
-        return new PageImpl<Product>(list);
+	public Page<Product> getShopProductList(Optional<Long> shopId, Optional<Long> categoryId, Pageable pageable) {       
+        if (shopId.isPresent()) {
+            return productRepository.findByShop(shopId.get(), pageable);
+        }
+
+        if (shopId.isPresent() && categoryId.isPresent()) {
+            return productRepository.findByShopAndCategory(shopId.get(), categoryId.get(), pageable);
+        }
+        
+        return productRepository.findAll(pageable);
     }
 	
 	public Product createProduct(Product product) throws Exception  {

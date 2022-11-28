@@ -11,6 +11,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 @Table(name = "openingHours")
 public class OpeningHoursShop {
@@ -24,9 +26,11 @@ public class OpeningHoursShop {
     private int day;
 	
 	@Column(nullable = false)
+	@JsonFormat(pattern="HH:mm:ss")
     private LocalTime openAt;
 	
 	@Column(nullable = false)
+	@JsonFormat(pattern="HH:mm:ss")
     private LocalTime closeAt;
 	
 	public long getId() {
