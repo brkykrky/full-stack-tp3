@@ -20,12 +20,12 @@ public class ProductService {
     }
 
 	public Page<Product> getShopProductList(Optional<Long> shopId, Optional<Long> categoryId, Pageable pageable) {       
-        if (shopId.isPresent()) {
-            return productRepository.findByShop(shopId.get(), pageable);
-        }
-
         if (shopId.isPresent() && categoryId.isPresent()) {
             return productRepository.findByShopAndCategory(shopId.get(), categoryId.get(), pageable);
+        }
+
+        if (shopId.isPresent()) {
+            return productRepository.findByShop(shopId.get(), pageable);
         }
         
         return productRepository.findAll(pageable);
