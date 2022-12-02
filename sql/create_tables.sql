@@ -4,6 +4,14 @@ create table categories (
     primary key (id)
 );
 
+create table localized_product (
+    id int8 not null,
+    description varchar(255),
+    locale varchar(255) not null,
+    name varchar(255) not null,
+    primary key (id)
+);
+
 create table opening_hours (
     id int8 not null,
     close_at time not null,
@@ -14,8 +22,6 @@ create table opening_hours (
 
 create table products (
     id int8 not null,
-    description varchar(255),
-    name varchar(255) not null,
     price float4 not null,
     shop_id int8,
     primary key (id)
@@ -24,6 +30,11 @@ create table products (
 create table products_categories (
     product_id int8 not null,
     category_id int8 not null
+);
+
+create table products_localized_product (
+    product_id int8 not null,
+    localized_product_id int8 not null
 );
 
 create table shops (
@@ -47,6 +58,9 @@ create table translation (
     primary key (id)
 );
 
+ alter table products_localized_product
+ add constraint UK_n8q0vltkv2dgjclj2aqn26l03 unique(localized_product_id);
+
 alter table shops
 add constraint UK_ar5yyuartm46e1brh920fpfiv unique (name);
 
@@ -61,6 +75,12 @@ add constraint FKqt6m2o5dly3luqcm00f5t4h2p foreign key (category_id) references 
 
 alter table products_categories
 add constraint FKtj1vdea8qwerbjqie4xldl1el foreign key (product_id) references products;
+
+alter table products_localized_product
+add constraint FKjs8yfvw4we59oaei8c9txb4wy foreign key (localized_product_id) references localized_product;
+
+alter table products_localized_product add constraint
+FK6i2yelx9i3lagm1u7n6v0xnfh foreign key (product_id) references products;
 
 alter table shops_opening_hours
 add constraint FKti43xlm3mfbeodhgi4qn1yhgw foreign key (opening_hours_id) references opening_hours;

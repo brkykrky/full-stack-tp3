@@ -3,6 +3,7 @@ package fr.fullstack.shopapp.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,7 +13,9 @@ import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "products")
@@ -22,16 +25,12 @@ public class Product {
     private long id;
 
     @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
     private float price;
 
-	// @OneToMany(cascade = {CascadeType.ALL})
-	// private List<Translation> translations = new ArrayList<Translation>();
+	@OneToMany(cascade = {CascadeType.ALL})
+	@Size(min=1)
+	private List<LocalizedProduct> localizedProduct = new ArrayList<LocalizedProduct>();
 
-    @Column
-    private String description;
 
 	@ManyToOne  
 	private Shop shop;
@@ -51,14 +50,6 @@ public class Product {
 		this.id = id;
 	}
 
-    public String getName() {
-		return name;
-	}
-	
-	public void setName(String name) {
-		this.name = name;
-	}
-
     public float getPrice() {
 		return price;
 	}
@@ -67,20 +58,12 @@ public class Product {
 		this.price = price;
 	}
 
-	// public List<Translation> getTranslations() {
-	// 	return translations;
-	// }
-	
-	// public void setTranslations(List<Translation> translations) {
-	// 	this.translations = translations;
-	// }
-
-    public String getDescription() {
-		return description;
+	public List<LocalizedProduct> getLocalizedProducts() {
+		return localizedProduct;
 	}
 	
-	public void setDescription(String description) {
-		this.description = description;
+	public void setLocalizedProducts(List<LocalizedProduct> localizedProduct) {
+		this.localizedProduct = localizedProduct;
 	}
 
 	public Shop getShop() {

@@ -2,10 +2,14 @@ package fr.fullstack.shopapp.service;
 
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import fr.fullstack.shopapp.entity.Product;
 import fr.fullstack.shopapp.repository.ProductRepository;
@@ -14,6 +18,9 @@ import fr.fullstack.shopapp.repository.ProductRepository;
 public class ProductService {
 	@Autowired
     private ProductRepository productRepository;
+
+    @PersistenceContext
+    private EntityManager em;
 
 	public Product getProductById(long id) {
         return productRepository.findById(id).orElse(null);
@@ -31,14 +38,26 @@ public class ProductService {
         return productRepository.findAll(pageable);
     }
 	
+    @Transactional
 	public Product createProduct(Product product) throws Exception  {
+        // Check that product exists at least in french
+        boolean cond = product.getLocalizedProducts()
+            .stream().filter(o -> o.getLocale().equals("FR")).findFirst().isPresent();
+        if (!cond) {
+            throw new Exception("Product does not exist in French");
+        }
+
         try {
-            return productRepository.save(product);
+            Product newProduct = productRepository.save(product);
+            em.flush();
+            em.refresh(newProduct);
+            return newProduct;
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
     }
 	
+    @Transactional
 	public Product updateProduct(Product product) throws Exception {
         Optional<Product> productFound = productRepository.findById(product.getId());
         if (productFound.isPresent()) {
