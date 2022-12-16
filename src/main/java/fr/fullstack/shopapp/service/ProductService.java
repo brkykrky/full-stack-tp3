@@ -11,7 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fr.fullstack.shopapp.entity.Product;
+import fr.fullstack.shopapp.model.LocalizedProduct;
+import fr.fullstack.shopapp.model.Product;
 import fr.fullstack.shopapp.repository.ProductRepository;
 
 @Service
@@ -22,8 +23,12 @@ public class ProductService {
     @PersistenceContext
     private EntityManager em;
 
-	public Product getProductById(long id) {
-        return productRepository.findById(id).orElse(null);
+	public Product getProductById(long id) throws Exception {
+        try {
+            return getProduct(id);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
     }
 
 	public Page<Product> getShopProductList(Optional<Long> shopId, Optional<Long> categoryId, Pageable pageable) {       
@@ -40,11 +45,11 @@ public class ProductService {
 	
     @Transactional
 	public Product createProduct(Product product) throws Exception  {
-        // Check that product exists at least in french
-        boolean cond = product.getLocalizedProducts()
-            .stream().filter(o -> o.getLocale().equals("FR")).findFirst().isPresent();
-        if (!cond) {
-            throw new Exception("Product does not exist in French");
+        // Check that product exists at least in french and check name's length 
+        try {
+            checkLocalizedProducts(product);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
         }
 
         try {
@@ -59,20 +64,39 @@ public class ProductService {
 	
     @Transactional
 	public Product updateProduct(Product product) throws Exception {
-        Optional<Product> productFound = productRepository.findById(product.getId());
-        if (productFound.isPresent()) {
+        try {
+            getProduct(product.getId());
             return this.createProduct(product);
-        } else {
-            throw new Exception("Id not found");
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
         }
     }
 	
 	public void deleteProductById(long id) throws Exception {
         try {
+            getProduct(id);
             productRepository.deleteById(id);
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
+    }
+
+    private void checkLocalizedProducts(Product product) throws Exception {
+        Optional<LocalizedProduct> localizedProductFr = product.getLocalizedProducts()
+            .stream().filter(o -> o.getLocale().equals("FR")).findFirst();
+
+        // A name in french must be at least provided
+        if (!localizedProductFr.isPresent()) {
+            throw new Exception("A name in french must be at least provided");
+        }
+    }
+
+    private Product getProduct(Long id) throws Exception {
+        Optional<Product> product = productRepository.findById(id);
+        if (!product.isPresent()) {
+            throw new Exception("Product with id " + id + " not found");
+        }
+        return product.get();
     }
 
 }

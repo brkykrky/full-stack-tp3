@@ -16,5 +16,5 @@ The application is available at : http://localhost:8080.
 
 - [x] Filter on shop
 - [x] CRUD product
-- [ ] Internationalization product
+- [x] Internationalization product
 - [x] CRUD category

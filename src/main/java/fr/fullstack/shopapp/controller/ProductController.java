@@ -2,11 +2,14 @@ package fr.fullstack.shopapp.controller;
 
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,8 +21,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import fr.fullstack.shopapp.entity.Product;
+import fr.fullstack.shopapp.model.Product;
 import fr.fullstack.shopapp.service.ProductService;
+import fr.fullstack.shopapp.util.ErrorValidation;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
@@ -33,7 +37,11 @@ public class ProductController {
 	@ApiOperation(value = "Get product by id")
 	@GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable long id) {
-        return ResponseEntity.ok().body(service.getProductById(id));
+		try {
+			return ResponseEntity.ok().body(service.getProductById(id));
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+		}
     }
 
 	@ApiOperation(value = "Get products (filtering by shop and category is possible)")
@@ -50,25 +58,31 @@ public class ProductController {
 	
 	@ApiOperation(value = "Create a product")
 	@PostMapping
-	public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+	public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product, Errors errors) {
+		if (errors.hasErrors()) {
+			throw new ResponseStatusException(
+				HttpStatus.BAD_REQUEST, ErrorValidation.getErrorValidationMessage(errors));
+		}
+		
 		try {
 			return ResponseEntity.ok(service.createProduct(product));
 		} catch (Exception e) {
-			throw new ResponseStatusException(
-				HttpStatus.BAD_REQUEST, "An error occured during the creation", e
-			);
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
 	}
 	
 	@ApiOperation(value = "Update a product")
 	@PutMapping
-	public ResponseEntity<Product> updateProduct(@RequestBody Product product) {
+	public ResponseEntity<Product> updateProduct(@Valid @RequestBody Product product, Errors errors) {
+		if (errors.hasErrors()) {
+			throw new ResponseStatusException(
+				HttpStatus.BAD_REQUEST, ErrorValidation.getErrorValidationMessage(errors));
+		}
+		
 		try {
 			return ResponseEntity.ok().body(service.updateProduct(product));
 		} catch (Exception e) {
-			throw new ResponseStatusException(
-				HttpStatus.BAD_REQUEST, "An error occured during the modification", e
-			);
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
 	}
 	
@@ -79,9 +93,7 @@ public class ProductController {
 			service.deleteProductById(id);
 			return HttpStatus.OK;
 		} catch (Exception e) {
-			throw new ResponseStatusException(
-				HttpStatus.BAD_REQUEST, "An error occured during the deletion", e
-			);
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
     }
 }
