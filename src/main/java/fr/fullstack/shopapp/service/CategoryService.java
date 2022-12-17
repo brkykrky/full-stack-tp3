@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import fr.fullstack.shopapp.entity.Category;
+import fr.fullstack.shopapp.model.Category;
 import fr.fullstack.shopapp.repository.CategoryRepository;
 
 @Service
@@ -15,8 +15,12 @@ public class CategoryService {
 	@Autowired
     private CategoryRepository categoryRepository;
 
-	public Category getCategoryById(long id) {
-        return categoryRepository.findById(id).orElse(null);
+	public Category getCategoryById(long id) throws Exception {
+        try {
+            return getCategory(id);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
     }
 
 	public Page<Category> getCategoryList(Pageable pageable) {       
@@ -32,19 +36,28 @@ public class CategoryService {
     }
 	
 	public Category updateCategory(Category category) throws Exception {
-        Optional<Category> categoryFound = categoryRepository.findById(category.getId());
-        if (categoryFound.isPresent()) {
+        try {
+            getCategory(category.getId());
             return this.createCategory(category);
-        } else {
-            throw new Exception("Id not found");
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
         }
     }
 	
 	public void deleteCategoryById(long id) throws Exception {
         try {
+            getCategory(id);
             categoryRepository.deleteById(id);
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
+    }
+
+    private Category getCategory(Long id) throws Exception {
+        Optional<Category> category = categoryRepository.findById(id);
+        if (!category.isPresent()) {
+            throw new Exception("Category with id " + id + " not found");
+        }
+        return category.get();
     }
 }

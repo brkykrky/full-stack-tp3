@@ -58,11 +58,8 @@ create table translation (
     primary key (id)
 );
 
- alter table products_localized_product
- add constraint UK_n8q0vltkv2dgjclj2aqn26l03 unique(localized_product_id);
-
-alter table shops
-add constraint UK_ar5yyuartm46e1brh920fpfiv unique (name);
+alter table products_localized_product
+add constraint UK_n8q0vltkv2dgjclj2aqn26l03 unique(localized_product_id);
 
 alter table shops_opening_hours
 add constraint UK_cnkerx0e3gn4yuhpjkr1d7heu unique (opening_hours_id);

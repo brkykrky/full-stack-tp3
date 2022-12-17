@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import fr.fullstack.shopapp.entity.Shop;
+import fr.fullstack.shopapp.model.Shop;
 
 public interface ShopRepository extends JpaRepository<Shop, Long> {
     // FILTERS

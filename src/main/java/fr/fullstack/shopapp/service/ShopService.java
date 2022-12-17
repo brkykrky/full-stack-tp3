@@ -12,7 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fr.fullstack.shopapp.entity.Shop;
+import fr.fullstack.shopapp.model.Shop;
 import fr.fullstack.shopapp.repository.ShopRepository;
 
 @Service
@@ -23,8 +23,12 @@ public class ShopService {
     @PersistenceContext
     private EntityManager em;
 	
-	public Shop getShopById(long id) {
-        return shopRepository.findById(id).orElse(null);
+	public Shop getShopById(long id) throws Exception {
+        try {
+            return getShop(id);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
     }
 
     public Page<Shop> getShopList(
@@ -65,23 +69,23 @@ public class ShopService {
             em.refresh(newShop);
             return newShop;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             throw new Exception(e.getMessage());
         }
     }
 	
     @Transactional
 	public Shop updateShop(Shop shop) throws Exception {
-        Optional<Shop> shopFound = shopRepository.findById(shop.getId());
-        if (shopFound.isPresent()) {
+        try {
+            getShop(shop.getId());
             return this.createShop(shop);
-        } else {
-            throw new Exception("Id not found");
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
         }
     }
 	
 	public void deleteShopById(long id) throws Exception {
         try {
+            getShop(id);
             shopRepository.deleteById(id);
         } catch (Exception e) {
             throw new Exception(e.getMessage());
@@ -135,5 +139,13 @@ public class ShopService {
         }
         
         return null;
+    }
+
+    private Shop getShop(Long id) throws Exception {
+        Optional<Shop> shop = shopRepository.findById(id);
+        if (!shop.isPresent()) {
+            throw new Exception("Shop with id " + id + " not found");
+        }
+        return shop.get();
     }
 }

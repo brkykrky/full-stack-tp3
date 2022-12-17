@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import fr.fullstack.shopapp.entity.Product;
+import fr.fullstack.shopapp.model.Product;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 	@Query(value="SELECT * FROM Products WHERE shop_id = ?1", nativeQuery = true)
