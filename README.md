@@ -1,20 +1,17 @@
-# shop-server
+# Shop serveur
 
-## Run the application with mvn
+## Lancer l'application avec mvn
 
-In the project directory, you have to run : `mvn spring-boot:run`. The application is available at : http://localhost:8080.
+A la racine du répertoire, il faut exécuter : `mvn spring-boot:run`.
 
-A [swagger documentation](http://localhost:8080/swagger-ui/#/shop-controller) is also available.
+L'application est disponible ici : http://localhost:8080.
 
-## Run the application with Docker
+## Lancer l'application avec Docker
 
-In the project directory, you have to run : `docker compose up`.
+A la racine du répertoire, il faut exécuter : `docker compose up`.
 
-The application is available at : http://localhost:8080.
+L'application est disponible ici : http://localhost:8080.
 
-## Roadmap
+## Swagger
 
-- [x] Filter on shop
-- [x] CRUD product
-- [x] Internationalization product
-- [x] CRUD category
+Une [documentation swagger](http://localhost:8080/swagger-ui/#/shop-controller) est disponible.
