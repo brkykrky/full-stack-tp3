@@ -3,6 +3,8 @@ package fr.fullstack.shopapp;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Pageable;
+import org.springframework.validation.Errors;
 
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -21,6 +23,7 @@ public class ShopAppApplication {
 	@Bean
 	public Docket api() {
 		return new Docket(DocumentationType.SWAGGER_2)
+			.ignoredParameterTypes(Errors.class, Pageable.class)
 			.select()
 			.apis(RequestHandlerSelectors.basePackage("fr.fullstack.shopapp.controller"))
 			.paths(PathSelectors.any())

@@ -24,6 +24,8 @@ import org.springframework.web.server.ResponseStatusException;
 import fr.fullstack.shopapp.model.Product;
 import fr.fullstack.shopapp.service.ProductService;
 import fr.fullstack.shopapp.util.ErrorValidation;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
@@ -34,7 +36,7 @@ public class ProductController {
 	@Autowired
     private ProductService service;
 	
-	@ApiOperation(value = "Get product by id")
+	@ApiOperation(value = "Get a product by id")
 	@GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable long id) {
 		try {
@@ -46,10 +48,16 @@ public class ProductController {
 
 	@ApiOperation(value = "Get products (filtering by shop and category is possible)")
 	@GetMapping
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "page", dataType = "integer", paramType = "query",
+				value = "Results page you want to retrieve (0..N)", defaultValue = "0"),
+		@ApiImplicitParam(name = "size", dataType = "integer", paramType = "query",
+				value = "Number of records per page", defaultValue = "5"),
+	})
 	public ResponseEntity<Page<Product>> getProductsOfShop(
 		Pageable pageable,
-		@ApiParam(example = "1") @RequestParam(required = false) Optional<Long> shopId,
-		@ApiParam(example = "1") @RequestParam(required = false) Optional<Long> categoryId
+		@ApiParam(value = "Id of the shop", example = "1") @RequestParam(required = false) Optional<Long> shopId,
+		@ApiParam(value = "Id of the category", example = "1") @RequestParam(required = false) Optional<Long> categoryId
 	) {
 		return ResponseEntity.ok(
 			service.getShopProductList(shopId, categoryId, pageable)

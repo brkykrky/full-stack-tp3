@@ -24,6 +24,8 @@ import org.springframework.web.server.ResponseStatusException;
 import fr.fullstack.shopapp.model.Shop;
 import fr.fullstack.shopapp.service.ShopService;
 import fr.fullstack.shopapp.util.ErrorValidation;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
@@ -34,7 +36,7 @@ public class ShopController {
 	@Autowired
     private ShopService service;
 	
-	@ApiOperation(value = "Get shop by id")
+	@ApiOperation(value = "Get a shop by id")
 	@GetMapping("/{id}")
     public ResponseEntity<Shop> getShopById(@PathVariable long id) {
 		try {
@@ -46,12 +48,22 @@ public class ShopController {
 	
 	@ApiOperation(value = "Get shops (sorting and filtering are possible)")
 	@GetMapping
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "page", dataType = "integer", paramType = "query",
+				value = "Results page you want to retrieve (0..N)", defaultValue = "0"),
+		@ApiImplicitParam(name = "size", dataType = "integer", paramType = "query",
+				value = "Number of records per page", defaultValue = "5"),
+	})
 	public ResponseEntity<Page<Shop>> getAllShops(
 		Pageable pageable,
-		@ApiParam(example = "name") @RequestParam(required = false) Optional<String> sortBy,
-		@ApiParam(example = "true") @RequestParam(required = false) Optional<Boolean> inVacations,
-		@ApiParam(example = "2022-11-15") @RequestParam(required = false) Optional<String> createdAfter,
-		@ApiParam(example = "2022-11-15") @RequestParam(required = false) Optional<String> createdBefore
+		@ApiParam(value = "To sort the shops. Possible values are 'name', 'nbProducts' and 'createdAt'", example = "name")
+			@RequestParam(required = false) Optional<String> sortBy,
+		@ApiParam(value = "Define that the shops must be in vacations or not", example = "true")
+			@RequestParam(required = false) Optional<Boolean> inVacations,
+		@ApiParam(value = "Define that the shops must be created after this date", example = "2022-11-15")
+			@RequestParam(required = false) Optional<String> createdAfter,
+		@ApiParam(value = "Define that the shops must be created before this date", example = "2022-11-15")
+			@RequestParam(required = false) Optional<String> createdBefore
 		
 	) {
 		return ResponseEntity.ok(

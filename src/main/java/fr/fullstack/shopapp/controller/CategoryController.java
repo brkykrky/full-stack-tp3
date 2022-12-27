@@ -22,6 +22,8 @@ import fr.fullstack.shopapp.model.Category;
 import fr.fullstack.shopapp.service.CategoryService;
 import fr.fullstack.shopapp.util.ErrorValidation;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiImplicitParam;
 
 @RestController
 @RequestMapping("/api/v1/categories")
@@ -30,7 +32,7 @@ public class CategoryController {
 	@Autowired
     private CategoryService service;
 
-	@ApiOperation(value = "Get category by id")
+	@ApiOperation(value = "Get a category by id")
 	@GetMapping("/{id}")
     public ResponseEntity<Category> getCategoryById(@PathVariable long id) {
 		try {
@@ -40,9 +42,15 @@ public class CategoryController {
 		}
     }
 	
-	@ApiOperation(value = "Get categories (sorting and filtering are possible)")
+	@ApiOperation(value = "Get categories")
 	@GetMapping
-	public ResponseEntity<Page<Category>> getAllCategorys(Pageable pageable) {
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "page", dataType = "integer", paramType = "query",
+				value = "Results page you want to retrieve (0..N)", defaultValue = "0"),
+		@ApiImplicitParam(name = "size", dataType = "integer", paramType = "query",
+				value = "Number of records per page", defaultValue = "5"),
+	})
+	public ResponseEntity<Page<Category>> getAllCategories(Pageable pageable) {
 		return ResponseEntity.ok(service.getCategoryList(pageable));
 	}
 	
