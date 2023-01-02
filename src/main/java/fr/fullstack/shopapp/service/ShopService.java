@@ -99,7 +99,7 @@ public class ShopService {
         Pageable pageable
     ) {
         if (inVacations.isPresent() && createdBefore.isPresent() && createdAfter.isPresent()) {
-            return shopRepository.findByInVacationsAndCreatedAtLessThanAndCreatedAtGreaterThan(
+            return shopRepository.findByInVacationsAndCreatedAtGreaterThanAndCreatedAtLessThan(
                 inVacations.get(), LocalDate.parse(createdAfter.get()), LocalDate.parse(createdBefore.get()), pageable
             );
         }
