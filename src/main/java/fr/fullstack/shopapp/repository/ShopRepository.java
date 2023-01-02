@@ -23,7 +23,7 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
 
     Page<Shop> findByInVacationsAndCreatedAtGreaterThan(boolean inVacations, LocalDate date, Pageable pageable);
 
-    Page<Shop> findByInVacationsAndCreatedAtLessThanAndCreatedAtGreaterThan(boolean inVacations, LocalDate dateStart,
+    Page<Shop> findByInVacationsAndCreatedAtGreaterThanAndCreatedAtLessThan(boolean inVacations, LocalDate dateStart,
             LocalDate dateEnd, Pageable pageable);
 
     // SORT
