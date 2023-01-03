@@ -1,6 +1,7 @@
 package fr.fullstack.shopapp.service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.fullstack.shopapp.model.Product;
 import fr.fullstack.shopapp.model.Shop;
 import fr.fullstack.shopapp.repository.ShopRepository;
 
@@ -83,9 +85,12 @@ public class ShopService {
         }
     }
 	
+    @Transactional
 	public void deleteShopById(long id) throws Exception {
         try {
-            getShop(id);
+            Shop shop = getShop(id);
+            // delete nested relations with products
+            deleteNestedRelations(shop);
             shopRepository.deleteById(id);
         } catch (Exception e) {
             throw new Exception(e.getMessage());
@@ -147,5 +152,15 @@ public class ShopService {
             throw new Exception("Shop with id " + id + " not found");
         }
         return shop.get();
+    }
+
+    private void deleteNestedRelations(Shop shop) {
+        List<Product> products = shop.getProducts(); 
+        for (int i = 0; i < products.size(); i++) {
+            Product product = products.get(i);
+            product.setShop(null);
+            em.merge(product);
+            em.flush();
+        }
     }
 }
