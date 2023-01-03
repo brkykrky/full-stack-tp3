@@ -89,7 +89,7 @@ public class CategoryController {
     public HttpStatus deleteCategory(@PathVariable long id) {
 		try {
 			service.deleteCategoryById(id);
-			return HttpStatus.OK;
+			return HttpStatus.NO_CONTENT;
 		} catch (Exception e) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
