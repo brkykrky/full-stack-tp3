@@ -59,7 +59,7 @@ public class ShopService {
         }
 
         // NONE
-        return shopRepository.findAll(pageable);
+        return shopRepository.findByOrderByIdAsc(pageable);
     }
 	
     @Transactional

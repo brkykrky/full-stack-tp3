@@ -33,7 +33,7 @@ public class CategoryService {
     }
 
 	public Page<Category> getCategoryList(Pageable pageable) {       
-        return categoryRepository.findAll(pageable);
+        return categoryRepository.findByOrderByIdAsc(pageable);
     }
 	
 	public Category createCategory(Category category) throws Exception  {

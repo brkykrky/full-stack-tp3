@@ -40,7 +40,7 @@ public class ProductService {
             return productRepository.findByShop(shopId.get(), pageable);
         }
         
-        return productRepository.findAll(pageable);
+        return productRepository.findByOrderByIdAsc(pageable);
     }
 	
     @Transactional
