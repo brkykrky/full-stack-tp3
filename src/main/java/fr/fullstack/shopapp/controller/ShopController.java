@@ -106,7 +106,7 @@ public class ShopController {
     public HttpStatus deleteShop(@PathVariable long id) {
 		try {
 			service.deleteShopById(id);
-			return HttpStatus.OK;
+			return HttpStatus.NO_CONTENT;
 		} catch (Exception e) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
 		}

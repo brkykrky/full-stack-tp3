@@ -99,7 +99,7 @@ public class ProductController {
     public HttpStatus deleteProduct(@PathVariable long id) {
 		try {
 			service.deleteProductById(id);
-			return HttpStatus.OK;
+			return HttpStatus.NO_CONTENT;
 		} catch (Exception e) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
 		}

@@ -1,19 +1,28 @@
 package fr.fullstack.shopapp.service;
 
+import java.util.List;
 import java.util.Optional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import fr.fullstack.shopapp.model.Category;
+import fr.fullstack.shopapp.model.Product;
 import fr.fullstack.shopapp.repository.CategoryRepository;
 
 @Service
 public class CategoryService {
 	@Autowired
     private CategoryRepository categoryRepository;
+
+    @PersistenceContext
+    private EntityManager em;
 
 	public Category getCategoryById(long id) throws Exception {
         try {
@@ -44,9 +53,12 @@ public class CategoryService {
         }
     }
 	
+    @Transactional
 	public void deleteCategoryById(long id) throws Exception {
         try {
-            getCategory(id);
+            Category category = getCategory(id);
+            // delete nested relations with products
+            deleteNestedRelations(category);
             categoryRepository.deleteById(id);
         } catch (Exception e) {
             throw new Exception(e.getMessage());
@@ -59,5 +71,15 @@ public class CategoryService {
             throw new Exception("Category with id " + id + " not found");
         }
         return category.get();
+    }
+
+    private void deleteNestedRelations(Category category) {
+        List<Product> products = category.getProducts(); 
+        for (int i = 0; i < products.size(); i++) {
+            Product product = products.get(i);
+            product.setCategories(null);
+            em.merge(product);
+            em.flush();
+        }
     }
 }

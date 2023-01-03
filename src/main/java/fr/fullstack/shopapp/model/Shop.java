@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,6 +21,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Formula;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "shops")
@@ -44,6 +46,10 @@ public class Shop {
 	
 	@OneToMany(cascade = {CascadeType.ALL})
 	private List<@Valid OpeningHoursShop> openingHours = new ArrayList<OpeningHoursShop>();
+
+	@OneToMany(mappedBy = "shop", fetch = FetchType.LAZY)
+	@JsonIgnore
+	private List<Product> products = new ArrayList<Product>();
 
 	@Formula(value = "(SELECT COUNT(*) FROM products p WHERE p.shop_id = id)")
 	private Long nbProducts;
@@ -87,6 +93,15 @@ public class Shop {
 	public void setOpeningHours(List<OpeningHoursShop> openingHours) {
 		this.openingHours = openingHours;
 	}
+
+	public List<Product> getProducts() {
+		return this.products;
+	}
+
+	public void setProducts(List<Product> products) {
+		this.products = products;
+	}
+
 
 	public long getNbProducts() {
 		return nbProducts;
