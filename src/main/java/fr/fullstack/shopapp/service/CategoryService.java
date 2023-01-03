@@ -77,7 +77,9 @@ public class CategoryService {
         List<Product> products = category.getProducts(); 
         for (int i = 0; i < products.size(); i++) {
             Product product = products.get(i);
-            product.setCategories(null);
+            List<Category> categories = product.getCategories();
+            categories.remove(category);
+            product.setCategories(categories);
             em.merge(product);
             em.flush();
         }
