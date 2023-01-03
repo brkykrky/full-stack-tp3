@@ -32,7 +32,7 @@ public class Product {
 	@NotNull(message = "Price may not be null")
     private float price;
 
-	@OneToMany(cascade = {CascadeType.ALL})
+	@OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true)
 	@Size(min = 1, message = "At least one name and one description must be provided")
 	private List<@Valid LocalizedProduct> localizedProduct = new ArrayList<LocalizedProduct>();
 
