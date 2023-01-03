@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import fr.fullstack.shopapp.model.Shop;
 
 public interface ShopRepository extends JpaRepository<Shop, Long> {
+    Page<Shop> findByOrderByIdAsc(Pageable pageable);
+
     // FILTERS
     Page<Shop> findByInVacations(boolean inVacations, Pageable pageable);
 

@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import fr.fullstack.shopapp.model.Product;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
+	Page<Product> findByOrderByIdAsc(Pageable pageable);
+
 	@Query(value="SELECT * FROM Products WHERE shop_id = ?1", nativeQuery = true)
 	Page<Product> findByShop(Long shopId, Pageable pageable);
 
