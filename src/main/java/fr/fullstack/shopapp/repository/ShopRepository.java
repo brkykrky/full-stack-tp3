@@ -33,6 +33,7 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
 
     // SORT
     Page<Shop> findByOrderByNameAsc(Pageable pageable);
+    Page<Shop> findAll(Pageable pageable);
 
     @Query(
             value = "SELECT *,"

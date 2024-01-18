@@ -9,8 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.Optional;
 
 @Service
@@ -80,7 +80,7 @@ public class ProductService {
     }
 
     private void checkLocalizedProducts(Product product) throws Exception {
-        Optional<LocalizedProduct> localizedProductFr = product.getLocalizedProducts()
+        Optional<LocalizedProduct> localizedProductFr = product.getLocalizedProduct()
                 .stream().filter(o -> o.getLocale().equals("FR")).findFirst();
 
         // A name in french must be at least provided

@@ -3,18 +3,26 @@ package fr.fullstack.shopapp.service;
 import fr.fullstack.shopapp.model.Product;
 import fr.fullstack.shopapp.model.Shop;
 import fr.fullstack.shopapp.repository.ShopRepository;
+import org.hibernate.Session;
+import org.hibernate.search.engine.search.predicate.dsl.BooleanPredicateClausesStep;
 import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
+import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ShopService {
@@ -62,6 +70,7 @@ public class ShopService {
             Optional<Boolean> inVacations,
             Optional<String> createdBefore,
             Optional<String> createdAfter,
+            Optional<String> name,
             Pageable pageable
     ) {
         // SORT
@@ -77,7 +86,7 @@ public class ShopService {
         }
 
         // FILTERS
-        Page<Shop> shopList = getShopListWithFilter(inVacations, createdBefore, createdAfter, pageable);
+        Page<Shop> shopList = getShopListWithFilter(sortBy,inVacations, createdBefore, createdAfter, name, pageable);
         if (shopList != null) {
             return shopList;
         }
@@ -114,55 +123,56 @@ public class ShopService {
         return shop.get();
     }
 
-    private Page<Shop> getShopListWithFilter(
+    public Page<Shop> getShopListWithFilter(
+            Optional<String> sortBy,
             Optional<Boolean> inVacations,
             Optional<String> createdAfter,
             Optional<String> createdBefore,
+            Optional<String> name,
             Pageable pageable
     ) {
-        if (inVacations.isPresent() && createdBefore.isPresent() && createdAfter.isPresent()) {
-            return shopRepository.findByInVacationsAndCreatedAtGreaterThanAndCreatedAtLessThan(
-                    inVacations.get(),
-                    LocalDate.parse(createdAfter.get()),
-                    LocalDate.parse(createdBefore.get()),
-                    pageable
-            );
+        SearchSession searchSession = Search.session(em);
+        MassIndexer indexer = searchSession.massIndexer( Shop.class );
+
+        List<Shop> result = new ArrayList<>();
+        try{
+            indexer.startAndWait();
+
+            if(name.isPresent()){
+                result = searchSession.search(Shop.class)
+                         .where(f -> f.match()
+                                 .field( "name" )
+                                 .matching( name.get() )).fetchHits(pageable.getPageNumber(), pageable.getPageSize());
+            }
+            else{
+                result = shopRepository.findAll(pageable).toList();
+            }
+
+            if(inVacations.isPresent())
+                result = result.stream().filter(x -> x.isInVacations() == inVacations.get()).toList();
+            if(createdAfter.isPresent())
+                result = result.stream().filter(x -> x.getCreatedAt().isAfter(LocalDate.parse(createdAfter.get()))).collect(Collectors.toList());
+            if(createdBefore.isPresent())
+                result = result.stream().filter(x -> x.getCreatedAt().isBefore(LocalDate.parse(createdBefore.get()))).collect(Collectors.toList());
+
+
+        }catch (Exception e){
+            System.out.println(e.getMessage());
         }
 
-        if (inVacations.isPresent() && createdBefore.isPresent()) {
-            return shopRepository.findByInVacationsAndCreatedAtLessThan(
-                    inVacations.get(), LocalDate.parse(createdBefore.get()), pageable
-            );
+        if(sortBy.isPresent()){
+            result = new ArrayList<>(result);
+            if(sortBy.get().equals("name")) {
+                result.sort(Comparator.comparing(Shop::getName));
+            }
+            else if(sortBy.get().equals("createdAt")) {
+                result.sort(Comparator.comparing(Shop::getCreatedAt));
+            }
+            else {
+                result.sort(Comparator.comparing(Shop::getNbProducts));
+            }
         }
 
-        if (inVacations.isPresent() && createdAfter.isPresent()) {
-            return shopRepository.findByInVacationsAndCreatedAtGreaterThan(
-                    inVacations.get(), LocalDate.parse(createdAfter.get()), pageable
-            );
-        }
-
-        if (inVacations.isPresent()) {
-            return shopRepository.findByInVacations(inVacations.get(), pageable);
-        }
-
-        if (createdBefore.isPresent() && createdAfter.isPresent()) {
-            return shopRepository.findByCreatedAtBetween(
-                    LocalDate.parse(createdAfter.get()), LocalDate.parse(createdBefore.get()), pageable
-            );
-        }
-
-        if (createdBefore.isPresent()) {
-            return shopRepository.findByCreatedAtLessThan(
-                    LocalDate.parse(createdBefore.get()), pageable
-            );
-        }
-
-        if (createdAfter.isPresent()) {
-            return shopRepository.findByCreatedAtGreaterThan(
-                    LocalDate.parse(createdAfter.get()), pageable
-            );
-        }
-
-        return null;
+        return new PageImpl<>(result,pageable, shopRepository.count());
     }
 }

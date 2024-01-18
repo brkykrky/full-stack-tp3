@@ -1,20 +1,26 @@
 package fr.fullstack.shopapp.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.LocalTime;
 
 @Entity
 @Table(name = "openingHours")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class OpeningHoursShop {
     @Column(nullable = false)
     @JsonFormat(pattern = "HH:mm:ss")
@@ -35,36 +41,4 @@ public class OpeningHoursShop {
     @JsonFormat(pattern = "HH:mm:ss")
     @NotNull(message = "OpenAt may not be null")
     private LocalTime openAt;
-
-    public LocalTime getCloseAt() {
-        return closeAt;
-    }
-
-    public long getDay() {
-        return day;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public LocalTime getOpenAt() {
-        return openAt;
-    }
-
-    public void setCloseAt(LocalTime closeAt) {
-        this.closeAt = closeAt;
-    }
-
-    public void setDay(int day) {
-        this.day = day;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public void setOpenAt(LocalTime openAt) {
-        this.openAt = openAt;
-    }
 }

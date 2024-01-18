@@ -1,26 +1,23 @@
 package fr.fullstack.shopapp.model;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
-import javax.validation.constraints.Size;
+import fr.fullstack.shopapp.validation.StringEnumeration;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "products")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Product {
     @ManyToMany
     @JoinTable(
@@ -42,46 +39,16 @@ public class Product {
     @NotNull(message = "Price may not be null")
     private float price;
 
+    @Column(nullable = true)
+    @StringEnumeration(enumClass = Currency.class, message = "Currency must be one of the values : USD | BTC | EUR | JPY")
+    private String currency;
+
     @ManyToOne
     private Shop shop;
-
-    public List<Category> getCategories() {
-        return categories;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public List<LocalizedProduct> getLocalizedProducts() {
-        return localizedProduct;
-    }
-
-    public float getPrice() {
-        return price;
-    }
-
-    public Shop getShop() {
-        return shop;
-    }
-
-    public void setCategories(List<Category> categories) {
-        this.categories = categories;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public void setLocalizedProducts(List<LocalizedProduct> localizedProduct) {
-        this.localizedProduct = localizedProduct;
-    }
-
-    public void setPrice(float price) {
-        this.price = price;
-    }
-
-    public void setShop(Shop shop) {
-        this.shop = shop;
+    @PostLoad
+    private void setDefaultCurrency() {
+        if(currency == null || currency.isEmpty()){
+            currency = Currency.EUR.name();
+        }
     }
 }
