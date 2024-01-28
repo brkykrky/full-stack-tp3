@@ -13,28 +13,46 @@ services:
       PGDATA: /data/postgres
     volumes:
       - postgres:/data/postgres
-      - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
-      - ./sql/fill_tables.sql:/docker-entrypoint-initdb.d/fill_tables.sql
+      - ./shop-server/sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      - ./shop-server/sql/fill_tables.sql:/docker-entrypoint-initdb.d/fill_tables.sql
     networks:
       - postgres
-    restart: always
 
+  elasticsearch:
+    container_name: shop-elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
+    hostname: "elasticsearch_docker"
+    environment:
+      discovery.type: single-node
+    ports:
+      - "9200:9200"
+    networks:
+      - postgres
+  
   api:
     depends_on:
       - "db"
+      - "elasticsearch"
     container_name: shop-server
-    build: .
+    build: ./shop-server
     ports:
       - "8080:8080"
     networks:
       - postgres
-    restart: always
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=1234
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 1234
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      ES_URL: elasticsearch:9200
+    restart: on-failure
 
+  front:
+    container_name: shop-client
+    build: ./shop-client
+    ports:
+      - "4200:4200"
+      
 networks:
   postgres:
     driver: bridge
